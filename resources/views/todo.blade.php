@@ -14,4 +14,17 @@
             </div>
         </div>
     </div>
+    <h2>Tasks for {{ Auth::user()->name }}</h2>
+    <ul>
+        @foreach (Auth::user()->tasks as $task)
+            <li>
+                <div>
+                    <strong>Description:</strong> {{ $task->description }}
+                </div>
+                <div>
+                    <strong>Status:</strong> {{ $task->isDone ? 'Completed' : 'Incomplete' }}
+                </div>
+            </li>
+        @endforeach
+    </ul>
 </x-app-layout>

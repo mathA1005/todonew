@@ -6,7 +6,7 @@ use App\Models\Task;
 use Illuminate\Http\Request;
 use App\Models\User;
 
-class TodoController extends Controller
+class Taskcontroller extends Controller
 {
     public function index()
     {
@@ -37,5 +37,3 @@ class TodoController extends Controller
 
     // Tu peux ajouter d'autres méthodes comme edit, update, destroy, etc.
 }
-
-
