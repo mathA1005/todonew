@@ -2,38 +2,48 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\TaskStoreRequest;
 use App\Models\Task;
-use Illuminate\Http\Request;
-use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 
-class Taskcontroller extends Controller
+class TaskController extends Controller
 {
     public function index()
     {
-        $todos = Task::all();
-        return view('todos.index', compact('todos'));
+
+        $tasks = Auth::user()->tasks;
+
+        return view('tasks.index', compact('tasks'));
     }
 
-    public function create()
+    // public function create()
+    // {
+    //     return view('tasks.create');
+    // }
+
+    public function store(TaskStoreRequest $request)
     {
-        return view('todos.create');
+        $task = Task::make();
+        $task->name = $request->validated()['name'];
+        $task->description = $request->validated()['description'];
+        $task->user_id = Auth::id();
+
+
+        $task->save();
+
+        return redirect()->route('tasks.index');
     }
 
-    public function store(Request $request)
+    public function status(Task $task)
     {
-        $request->validate([
-            'task' => 'required|max:255',
-        ]);
+        $task->update(['is_done' => !$task->is_done]);
 
-        Task::create([
-            'name' => $request->input('task'),
-            'description' => $request->input('description'), // Si tu as un champ de description dans ton formulaire
-            'is_done' => false, // Par défaut, la nouvelle tâche n'est pas terminée
-            'user_id' => User::inRandomOrder()->first()->id,
-        ]);
-
-        return redirect()->route('todos.index');
+        return redirect()->route('tasks.index');
     }
+    public function delete(Task $task)
+    {
+        $task->delete();
 
-    // Tu peux ajouter d'autres méthodes comme edit, update, destroy, etc.
+        return redirect()->route('tasks.index');
+    }
 }

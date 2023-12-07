@@ -14,21 +14,30 @@ use App\Http\Controllers\TaskController;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
-
 Route::get('/', function () {
     return view('welcome');
+});
+
+Route::middleware('auth')->group(function () {
+    Route::get('/tasks', [TaskController::class, 'index'])->name('tasks.index');
+    Route::get('/tasks/create', [TaskController::class, 'create'])->name('tasks.create');
+    Route::patch('/tasks/{task}', [TaskController::class, 'status'])->name('tasks.status');
+    Route::post('/tasks', [TaskController::class, 'store'])->name('tasks.store');
+    Route::delete('/tasks/{task}', [TaskController::class, 'delete'])->name('tasks.delete');
+
+    // Redirection des routes login et register vers tasks
+    Route::get('/login', function () {
+        return redirect('/tasks');
+    })->name('login');
+
+    Route::middleware(['auth', 'verified'])->get('/dashboard', function () {return view('dashboard');})->name('dashboard');
+
 });
 
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
-Route::get('/todo', function () {
-    return view('todo');
-})->middleware(['auth', 'verified'])->name('todo');
-
-
-Route::get('/tasks/index.blade.php', [TaskController::class, 'index']);
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
